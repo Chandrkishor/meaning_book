@@ -1,15 +1,19 @@
 ## Meaning book
+
 Try to store words and their meaning for perticlar user.
 
-#Features
+## Features
+
 Use can serach word meaning in multiple languge.
 And if he/she want can save in db for future,
 we are showing a table which shows all the word and meaning which saved in the db.
 
-#Technologies Used
+## Technologies Used
+
 NextJs for frontend, redis for db and material UI for styles.
 
 Installation
+
 ```bash
 npm i
 npm run dev
@@ -17,7 +21,7 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result
 
 #Usage
 [image](https://user-images.githubusercontent.com/102785273/233820953-db4ac5cc-f645-480d-bcd8-8845fceb88bd.png)
@@ -35,3 +39,4 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```

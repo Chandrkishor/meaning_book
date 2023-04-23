@@ -45,45 +45,63 @@ function Form() {
     const { value } = event.target;
     setInputValue(value);
   };
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
+    // setIsLoading(true);
     let val = inputValue?.split(",");
+    const { data } = await axios.get(`/api/wrds?${val}`);
+    console.log("handleSubmit ~ res: >>", data);
 
-    const params = new URLSearchParams();
-    params.append("q", val);
-    params.append("source", "en"); //from
-    params.append("target", languageType?.id); // to
-    params.append("api_key", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+    if (!res) {
+      const params = new URLSearchParams();
+      params.append("q", val);
+      params.append("source", "en"); //from
+      params.append("target", languageType?.id); // to
+      params.append("api_key", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
 
-    axios
-      .post("https://libretranslate.de/translate", params, {
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      })
-      .then(({ data }) => {
-        console.log(data);
-        setTranslatedVal(data || []);
-      })
-      .catch((err) => {
-        console.log("something went wrong", err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      axios
+        .post("https://libretranslate.de/translate", params, {
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })
+        .then(({ data }) => {
+          console.log(data);
+          setTranslatedVal(data || []);
+        })
+        .catch((err) => {
+          console.log("something went wrong", err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   };
-  const handleSave = () => {
+  const handleSave = async () => {
     let wd = inputValue?.split(",");
-    let result = translatedVal.translatedText?.split(",");
-    const addedVal = result?.map((e, index) => ({
+    let results = translatedVal.translatedText?.split(",");
+    const addedVal = results?.map((e, index) => ({
       word: wd?.[index],
       meaning: e,
     }));
-    // console.log("addedVal ~ addedVal: >>", addedVal);
-    setWords([...words, ...addedVal]);
+    try {
+      const res = await fetch("/api/wrds", {
+        body: JSON.stringify(addedVal),
+        headers: {
+          "Content-type": "application/json",
+        },
+        method: "POST",
+      });
+      const result = await res.json();
+      console.log(result);
+      setWords([...words, ...addedVal]);
+    } catch (error) {
+      console.error(`Failed to save array to Redis: ${error}`);
+      // Show an error message to the user
+    }
   };
+
   return (
     <>
       <FormContainer onSubmit={handleSubmit}>
