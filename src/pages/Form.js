@@ -47,12 +47,16 @@ function Form() {
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // setIsLoading(true);
+    setIsLoading(true);
     let val = inputValue?.split(",");
     const { data } = await axios.get(`/api/wrds?${val}`);
-    console.log("handleSubmit ~ res: >>", data);
-
-    if (!res) {
+    if (data) {
+      console.log("handleSubmit ~ data: >>", data);
+      setIsLoading(false);
+      setTranslatedVal(data);
+    }
+    console.log("handleSubmit ~ data: >>", data);
+    if (!data.values) {
       const params = new URLSearchParams();
       params.append("q", val);
       params.append("source", "en"); //from
@@ -68,7 +72,7 @@ function Form() {
         })
         .then(({ data }) => {
           console.log(data);
-          setTranslatedVal(data || []);
+          setTranslatedVal(data || {});
         })
         .catch((err) => {
           console.log("something went wrong", err);

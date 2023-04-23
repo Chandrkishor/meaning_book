@@ -7,7 +7,11 @@ export default async function handler(req, res) {
       let keyValuePairs = {};
       for (let i = 0; i < keysArr.length; i++) {
         let values = await redis.get(keysArr[i]);
-        keyValuePairs = { ...keyValuePairs, values };
+        keyValuePairs = {
+          ...keyValuePairs,
+          word: keysArr[i],
+          translatedText: values,
+        };
         res.status(200).json(keyValuePairs);
       }
     } catch (error) {
