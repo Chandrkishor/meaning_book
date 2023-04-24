@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
-import { styled, alpha, Grid, Button } from "@mui/material/";
+import { styled, alpha, Grid } from "@mui/material/";
 import axios from "axios";
 import LanguageContext from "@/store";
 import Loader from "@/Components/Loader";
+import { HandleSaveFun, TranslateApiFun } from "@/Components/Utils";
 
 const FormContainer = styled("form")({
   display: "flex",
@@ -38,7 +39,7 @@ const SubmitButton = styled("button")(({ theme }) => ({
 function Form() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [translatedVal, setTranslatedVal] = useState({});
+  const [translatedVal, setTranslatedVal] = useState("");
   const { languageType, setWords, words } = useContext(LanguageContext);
 
   const handleInputChange = (event) => {
@@ -48,61 +49,17 @@ function Form() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-    let val = inputValue?.split(",");
-    const { data } = await axios.get(`/api/wrds?${val}`);
+    setTranslatedVal("");
+    const { data } = await axios.get(`/api/wrds?${inputValue}`);
     if (data) {
-      console.log("handleSubmit ~ data: >>", data);
-      setIsLoading(false);
       setTranslatedVal(data);
-    }
-    console.log("handleSubmit ~ data: >>", data);
-    if (!data.values) {
-      const params = new URLSearchParams();
-      params.append("q", val);
-      params.append("source", "en"); //from
-      params.append("target", languageType?.id); // to
-      params.append("api_key", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
-
-      axios
-        .post("https://libretranslate.de/translate", params, {
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        })
-        .then(({ data }) => {
-          console.log(data);
-          setTranslatedVal(data || {});
-        })
-        .catch((err) => {
-          console.log("something went wrong", err);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  };
-  const handleSave = async () => {
-    let wd = inputValue?.split(",");
-    let results = translatedVal.translatedText?.split(",");
-    const addedVal = results?.map((e, index) => ({
-      word: wd?.[index],
-      meaning: e,
-    }));
-    try {
-      const res = await fetch("/api/wrds", {
-        body: JSON.stringify(addedVal),
-        headers: {
-          "Content-type": "application/json",
-        },
-        method: "POST",
-      });
-      const result = await res.json();
-      console.log(result);
-      setWords([...words, ...addedVal]);
-    } catch (error) {
-      console.error(`Failed to save array to Redis: ${error}`);
-      // Show an error message to the user
+      setIsLoading(false);
+    } else {
+      let callBack = (data) => {
+        setTranslatedVal(data);
+        setIsLoading(false);
+      };
+      TranslateApiFun(inputValue, languageType, callBack);
     }
   };
 
@@ -146,11 +103,13 @@ function Form() {
               }}>
               Meaning:
             </span>
-            {translatedVal.translatedText}
+            {translatedVal}
           </p>
         </Grid>
         <Grid item xs={12} sm={2} container justifyContent={"flex-end"}>
-          <SubmitButton onClick={handleSave}>Add</SubmitButton>
+          <SubmitButton onClick={() => HandleSaveFun(translatedVal)}>
+            Add
+          </SubmitButton>
         </Grid>
       </Grid>
     </>
