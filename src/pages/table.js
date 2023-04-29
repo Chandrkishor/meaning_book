@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -7,7 +7,9 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-import LanguageContext from "@/store";
+// eslint-disable-next-line import/no-unresolved
+// import LanguageContext from "@/store";
+import axios from "axios";
 
 const MyTable = styled(Table)({
   minWidth: 650,
@@ -41,14 +43,32 @@ const MyActionCell = styled(TableCell)({
 });
 
 const WordTable = () => {
-  const { words, setWords } = useContext(LanguageContext);
+  const [word, setWord] = useState({});
+  const getTableData = useCallback((pageNo = 0, rowPerPage = 10) => {
+    axios
+      .get(`/api/tableData?cursor=${pageNo}&count=${rowPerPage}`)
+      .then(({ data }) => {
+        console.log("axios.get ~ data: >>", data.data);
+        setWord(data.data);
+      })
+      .catch((error) => {
+        console.error(`Failed to retrieve data from API: ${error}`);
+      })
+      .finally(() => {
+        console.log("Request complete!");
+      });
+  }, []);
+
+  useEffect(() => {
+    getTableData();
+  }, [getTableData]);
 
   const handleDelete = (id) => {
-    console.log("WordTable ~ words: >>", words);
+    console.log("WordTable ~ words: >>", word);
     console.log("handleDelete ~ id: >>", id);
     // const newValue = words.filter((e) => e.word === id);// to get the id and remove form db
-    const newValue = words.filter((e) => e.word !== id);
-    setWords(newValue);
+    const newValue = word.filter((e) => e.word !== id);
+    setWord(newValue);
   };
 
   return (
@@ -61,14 +81,12 @@ const WordTable = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {words.map((row, index) => (
-          <MyTableRow key={row.word + index}>
-            <MyTableCell sx={{ p: "5px" }}>{row.word ?? ""}</MyTableCell>
-            <MyTableCell sx={{ p: "5px" }}>{row.meaning ?? ""}</MyTableCell>
+        {Object.entries(word).map(([key, value]) => (
+          <MyTableRow key={`${key}${value}`}>
+            <MyTableCell sx={{ p: "5px" }}>{key ?? ""}</MyTableCell>
+            <MyTableCell sx={{ p: "5px" }}>{value ?? ""}</MyTableCell>
             <MyActionCell sx={{ p: "5px" }}>
-              <IconButton
-                color="primary"
-                onClick={() => handleDelete(row.word)}>
+              <IconButton color="primary" onClick={() => handleDelete(key)}>
                 <DeleteIcon />
               </IconButton>
             </MyActionCell>

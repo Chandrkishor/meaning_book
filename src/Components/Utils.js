@@ -23,19 +23,36 @@ export const TranslateApiFun = (inputValue, languageType, callBack) => {
     });
 };
 
-export const HandleSaveFun = async (val) => {
-  try {
-    if (val?.length) {
-      const res = await fetch("/api/wrds", {
-        body: JSON.stringify(val),
-        headers: {
-          "Content-type": "application/json",
-        },
-        method: "POST",
-      });
-      res.json({ data: "Your word Saved" });
-    }
-  } catch (error) {
-    console.error(`Failed to save array to Redis: ${error}`);
-  }
-};
+// export const HandleSaveFun = async (val) => {
+//   try {
+//     if (val?.length) {
+//       const res = await fetch("/api/wrds", {
+//         body: JSON.stringify(val),
+//         headers: {
+//           "Content-type": "application/json",
+//         },
+//         method: "POST",
+//       });
+//       res.json({ data: "Your word Saved" });
+//     }
+//   } catch (error) {
+//     console.error(`Failed to save array to Redis: ${error}`);
+//   }
+// };
+
+// export const HandleSaveFun = async (word, meaning) => {
+//   let val = { word, meaning };
+//   try {
+//     if (meaning?.length) {
+//       const response = await axios.post("/api/wrds", val, {
+//         headers: {
+//           "Content-type": "application/json",
+//         },
+//       });
+//       // console.log(response.data);
+//       return response;
+//     }
+//   } catch (error) {
+//     console.error(`Failed to save array to Redis: ${error}`);
+//   }
+// };

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import redis from "@/lib/redis";
 
 export default async function handler(req, res) {
