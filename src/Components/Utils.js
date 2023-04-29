@@ -1,58 +1,14 @@
 import axios from "axios";
-
-export const TranslateApiFun = (inputValue, languageType, callBack) => {
-  const params = new URLSearchParams();
-  params.append("q", inputValue);
-  params.append("source", "en"); //from
-  params.append("target", languageType?.id); // to
-  params.append("api_key", process.env.apiKey);
-
+export const TranslateApiFun = (word, sourceLang, targetLang, callback) => {
+  const url = `https://api.mymemory.translated.net/get?q=${word}&langpair=${sourceLang}|${targetLang.id}`;
   axios
-    .post("https://libretranslate.de/translate", params, {
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    })
+    .get(url)
     .then(({ data }) => {
-      callBack(data?.translatedText);
+      console.log(".then ~ data: >>", data);
+      callback(data);
     })
-    .catch((err) => {
-      callBack("error");
-      console.log("something went wrong", err);
+    .catch((error) => {
+      console.log(error);
+      callback(null);
     });
 };
-
-// export const HandleSaveFun = async (val) => {
-//   try {
-//     if (val?.length) {
-//       const res = await fetch("/api/wrds", {
-//         body: JSON.stringify(val),
-//         headers: {
-//           "Content-type": "application/json",
-//         },
-//         method: "POST",
-//       });
-//       res.json({ data: "Your word Saved" });
-//     }
-//   } catch (error) {
-//     console.error(`Failed to save array to Redis: ${error}`);
-//   }
-// };
-
-// export const HandleSaveFun = async (word, meaning) => {
-//   let val = { word, meaning };
-//   try {
-//     if (meaning?.length) {
-//       const response = await axios.post("/api/wrds", val, {
-//         headers: {
-//           "Content-type": "application/json",
-//         },
-//       });
-//       // console.log(response.data);
-//       return response;
-//     }
-//   } catch (error) {
-//     console.error(`Failed to save array to Redis: ${error}`);
-//   }
-// };

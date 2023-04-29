@@ -41,6 +41,7 @@ function Form() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [translatedVal, setTranslatedVal] = useState("");
+  const [matches, setMatches] = useState([]);
   const { languageType } = useContext(LanguageContext);
   const [open, setOpen] = useState({
     status: false,
@@ -51,6 +52,7 @@ function Form() {
   const handleInputChange = (event) => {
     const { value } = event.target;
     setInputValue(value);
+    setMatches([]);
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -63,10 +65,11 @@ function Form() {
         setIsLoading(false);
       } else {
         let callBack = (data) => {
-          setTranslatedVal(data);
+          setTranslatedVal(data.responseData.translatedText);
+          setMatches(data.matches);
           setIsLoading(false);
         };
-        TranslateApiFun(inputValue, languageType, callBack);
+        TranslateApiFun(inputValue, "en", languageType, callBack);
       }
     } else {
       setOpen({
@@ -114,7 +117,7 @@ function Form() {
   };
 
   return (
-    <>
+    <Grid sx={{ padding: "5px 16px" }}>
       <FormContainer onSubmit={handleSubmit}>
         <InputField
           type="text"
@@ -123,46 +126,50 @@ function Form() {
           onChange={handleInputChange}
         />
         <SubmitButton type="submit">
-          {isLoading && <Loader />}Search
+          {isLoading && <Loader />}
+          Search
         </SubmitButton>
       </FormContainer>
-      <Grid container spacing={2} alignItems={"center"}>
+
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12} sm={5}>
+          <p style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+            Searching: {inputValue}
+          </p>
+        </Grid>
+
         <Grid item xs={12} sm={5}>
           <p
             style={{
-              margin: "1rem",
+              display: "flex",
+              alignItems: "center",
+              fontWeight: "bold",
+              fontSize: "1.2rem",
             }}>
-            <span
-              style={{
-                fontWeight: "bold",
-                fontSize: "1.2rem",
-                marginRight: "0.5rem",
-              }}>
-              Searching:
-            </span>
-            {inputValue}
+            Meaning: {translatedVal}
           </p>
         </Grid>
-        <Grid item xs={12} sm={5}>
-          <p style={{ display: "flex", alignItems: "center" }}>
-            <span
-              style={{
-                fontWeight: "bold",
-                fontSize: "1.2rem",
-                marginRight: "0.5rem",
-              }}>
-              Meaning:
-            </span>
-            {translatedVal}
-          </p>
-        </Grid>
-        <Grid item xs={12} sm={2} container justifyContent={"flex-end"}>
+
+        <Grid item xs={12} sm={2} container justifyContent="flex-end">
           <SubmitButton
             onClick={() => HandleSaveFun(inputValue, translatedVal)}>
             Add
           </SubmitButton>
         </Grid>
+        {matches?.length ? (
+          <Grid item xs={12}>
+            <p style={{ fontWeight: "bold" }}>Matching words:</p>
+            <ul>
+              {matches.map((match) => (
+                <li key={match.id}>{match.translation},</li>
+              ))}
+            </ul>
+          </Grid>
+        ) : (
+          ""
+        )}
       </Grid>
+
       <Snackbar
         open={open.status}
         autoHideDuration={3000}
@@ -172,7 +179,7 @@ function Form() {
           {open.message}
         </Alert>
       </Snackbar>
-    </>
+    </Grid>
   );
 }
 
