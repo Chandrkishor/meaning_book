@@ -1,15 +1,18 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Autocomplete, TextField } from "@mui/material";
-import { useState } from "react";
 import axios from "axios";
+// eslint-disable-next-line import/no-unresolved
 import LanguageContext from "@/store";
+import { useRouter } from "next/router";
 
 function ResponsiveAppBar() {
   const { languageType, setLanguageType } = useContext(LanguageContext);
+  const router = useRouter();
+
   const [langOptions, setLangOptions] = useState([]);
 
   useEffect(() => {
