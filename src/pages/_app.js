@@ -16,10 +16,18 @@ export default function App({ Component, pageProps }) {
     label: "Hindi",
   });
   const [words, setWords] = useState([{ word: "Hello", meaning: "नमस्ते" }]);
+  const [searchedText, setSearchedText] = useState("");
 
   return (
     <LanguageContext.Provider
-      value={{ languageType, setLanguageType, words, setWords }}>
+      value={{
+        languageType,
+        setLanguageType,
+        words,
+        setWords,
+        searchedText,
+        setSearchedText,
+      }}>
       <Grid sx={{ fontFamily: "Roboto", fontWeight: "500" }}>
         <ResponsiveAppBar />
         <Component {...pageProps} />

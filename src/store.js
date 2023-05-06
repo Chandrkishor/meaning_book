@@ -5,5 +5,7 @@ const LanguageContext = createContext({
   setLanguageType: () => {},
   words: [], // empty array to store words
   setWords: () => {},
+  searchedText: "",
+  setSearchedText: () => {},
 });
 export default LanguageContext;

@@ -60,7 +60,7 @@ const WordTable = () => {
   }, []);
 
   useEffect(() => {
-    getTableData();
+    // getTableData();
   }, [getTableData]);
 
   const handleDelete = (id) => {
